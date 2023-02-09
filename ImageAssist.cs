@@ -1,10 +1,20 @@
 ﻿using OpenCvSharp;
 using System.Drawing;
+using Point = OpenCvSharp.Point;
+using Range = OpenCvSharp.Range;
 
 namespace ImageAssist
 {
     public class ImageAssist
     {
+        public enum ImageExt
+        {
+            JPENG = 0,
+            PNG = 1,
+            BMP = 2,
+            TIFF = 3,
+        }
+
         /// <summary>
         /// 이미지 검색 확장자 필터 설정
         /// </summary>
@@ -48,6 +58,49 @@ namespace ImageAssist
             {
                 return null;
             }
+        }
+
+        public static Mat ImageCrop(Mat mat, Point p1, Point p2)
+        {
+            OpenCvSharp.Size size = new(p2.X - p1.X, p2.Y - p1.Y);
+            Rect rect = new(p1, size);
+            return mat.SubMat(rect);
+        }
+
+        public static bool ImageSave(Mat mat, string path, ImageExt imageExt)
+        {
+            ImwriteFlags imwriteFlags;
+            ImageEncodingParam imageEncodingParam;
+            string? dir = Path.GetDirectoryName(path);
+            string? filename = Path.GetFileNameWithoutExtension(path);
+            bool IsSave = false;
+            if (!string.IsNullOrWhiteSpace(dir) && !string.IsNullOrWhiteSpace(filename))
+            {
+                switch (imageExt)
+                {
+                    case ImageExt.JPENG:
+                        imwriteFlags = ImwriteFlags.JpegQuality;
+                        imageEncodingParam = new(imwriteFlags, 100);
+                        IsSave = Cv2.ImWrite(Path.Combine(dir, filename + ".jpg"), mat, imageEncodingParam);
+                        break;
+                    case ImageExt.PNG:
+                        imwriteFlags = ImwriteFlags.PngCompression;
+                        imageEncodingParam = new(imwriteFlags, 0);
+                        IsSave = mat.ImWrite(Path.Combine(dir, filename + ".png"), imageEncodingParam);
+                        break;
+                    case ImageExt.BMP:
+                        imwriteFlags = ImwriteFlags.WebPQuality;
+                        imageEncodingParam = new(imwriteFlags, 1000);
+                        IsSave = mat.ImWrite(Path.Combine(dir, filename + ".bmp"));
+                        break;
+                    case ImageExt.TIFF:
+                        imwriteFlags = ImwriteFlags.TiffResUnit;
+                        imageEncodingParam = new(imwriteFlags, 600);
+                        IsSave = mat.ImWrite(Path.Combine(dir, filename + ".tiff"));
+                        break;
+                }
+            }
+            return IsSave;
         }
     }
 }
