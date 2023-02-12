@@ -1,13 +1,10 @@
 ﻿using OpenCvSharp;
-using System.Drawing;
 using Point = OpenCvSharp.Point;
 
 namespace ImageAssist
 {
     public class ImageAssistExtension
     {
-
-
         public static (Point, Point)? ExtractCoordinatesMaskImage(string imPath)
         {
             using Mat matIm = Cv2.ImRead(imPath);
@@ -21,7 +18,7 @@ namespace ImageAssist
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="imPath"></param>
         /// <param name="outMat"></param>
@@ -81,7 +78,7 @@ namespace ImageAssist
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="simRImage"></param>
         /// <param name="outMat"></param>
@@ -140,6 +137,4 @@ namespace ImageAssist
             return (new Point(p1X, p1Y), new Point(p2X, p2Y));
         }
     }
-
-    
 }

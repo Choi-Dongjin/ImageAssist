@@ -1,7 +1,6 @@
 ﻿using OpenCvSharp;
 using System.Drawing;
 using Point = OpenCvSharp.Point;
-using Range = OpenCvSharp.Range;
 
 namespace ImageAssist
 {
@@ -26,6 +25,7 @@ namespace ImageAssist
             Cv2.WaitKey(0);
             Cv2.DestroyAllWindows();
         }
+
         // ExtractCoordinatesMaskImage
         // ImageAssistExtension
 
@@ -83,16 +83,19 @@ namespace ImageAssist
                         imageEncodingParam = new(imwriteFlags, 100);
                         IsSave = Cv2.ImWrite(Path.Combine(dir, filename + ".jpg"), mat, imageEncodingParam);
                         break;
+
                     case ImageExt.PNG:
                         imwriteFlags = ImwriteFlags.PngCompression;
                         imageEncodingParam = new(imwriteFlags, 0);
                         IsSave = mat.ImWrite(Path.Combine(dir, filename + ".png"), imageEncodingParam);
                         break;
+
                     case ImageExt.BMP:
                         imwriteFlags = ImwriteFlags.WebPQuality;
                         imageEncodingParam = new(imwriteFlags, 1000);
                         IsSave = mat.ImWrite(Path.Combine(dir, filename + ".bmp"));
                         break;
+
                     case ImageExt.TIFF:
                         imwriteFlags = ImwriteFlags.TiffResUnit;
                         imageEncodingParam = new(imwriteFlags, 600);
