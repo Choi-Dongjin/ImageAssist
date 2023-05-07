@@ -29,7 +29,7 @@ namespace ImageAssist
         // ExtractCoordinatesMaskImage
         // ImageAssistExtension
 
-        public static Bitmap LoadBitmap(string path)
+        public static Bitmap? LoadBitmap(string path)
         {
             if (imageExts.Contains(Path.GetExtension(path)))
             {
