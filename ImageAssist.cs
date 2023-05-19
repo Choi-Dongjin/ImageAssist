@@ -67,6 +67,38 @@ namespace ImageAssist
             return mat.SubMat(rect);
         }
 
+        public static List<Mat> ImageCropRatio(Mat imageMat, int divisionsX, int divisionsY)
+        {
+            List<Mat> croppedImages = new List<Mat>();
+
+            // 이미지의 가로와 세로 길이 구하기
+            int imageWidth = imageMat.Width;
+            int imageHeight = imageMat.Height;
+
+            // 자르기 후 이미지의 크기
+            int cutWidth = imageWidth / divisionsX;
+            int cutHeight = imageHeight / divisionsY;
+
+            // 이미지를 등분하여 잘라내기
+            for (int y = 0; y < divisionsY; y++)
+            {
+                for (int x = 0; x < divisionsX; x++)
+                {
+                    // 자를 영역의 좌상단 좌표 계산
+                    int startX = x * cutWidth;
+                    int startY = y * cutHeight;
+
+                    // 영역 잘라내기
+                    Rect roi = new Rect(startX, startY, cutWidth, cutHeight);
+                    Mat croppedImage = new Mat(imageMat, roi);
+
+                    croppedImages.Add(croppedImage);
+                }
+            }
+
+            return croppedImages;
+        }
+
         public static bool ImageSave(Mat mat, string path, ImageExt imageExt)
         {
             ImwriteFlags imwriteFlags;
