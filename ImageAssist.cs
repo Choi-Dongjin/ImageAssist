@@ -1,6 +1,7 @@
 ﻿using OpenCvSharp;
 using System.Drawing;
-using Point = OpenCvSharp.Point;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace ImageAssist
 {
@@ -25,9 +26,6 @@ namespace ImageAssist
             Cv2.WaitKey(0);
             Cv2.DestroyAllWindows();
         }
-
-        // ExtractCoordinatesMaskImage
-        // ImageAssistExtension
 
         public static Bitmap? LoadBitmap(string path)
         {
@@ -60,7 +58,7 @@ namespace ImageAssist
             }
         }
 
-        public static Mat ImageCrop(Mat mat, Point p1, Point p2)
+        public static Mat ImageCrop(Mat mat, OpenCvSharp.Point p1, OpenCvSharp.Point p2)
         {
             OpenCvSharp.Size size = new(p2.X - p1.X, p2.Y - p1.Y);
             Rect rect = new(p1, size);
@@ -97,6 +95,13 @@ namespace ImageAssist
             }
 
             return croppedImages;
+        }
+
+        public static List<SixLabors.ImageSharp.Image<Rgba32>> ImageCropRatio(SixLabors.ImageSharp.Image<Rgba32> imageMat, int divisionsX, int divisionsY)
+        {
+
+
+            return new();
         }
 
         public static bool ImageSave(Mat mat, string path, ImageExt imageExt)
