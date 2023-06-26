@@ -8,16 +8,16 @@
         public int BitDepth { get; private set; }
         public byte[] Bytes { get; set; }
 
-        public string FileName { get; init; }
+        public string FilePath { get; init; }
 
-        public ImageInfo(string fileName, LibraryType.LType lType = LibraryType.Default)
+        public ImageInfo(string filePath, LibraryType.LType lType = LibraryType.Default)
         {
-            FileName = fileName;
+            FilePath = filePath;
             switch (lType)
             {
                 case LibraryType.LType.OpenCV:
                     {
-                        using ImageInfoOpenCV imageInfoOpenCV = new(fileName);
+                        using ImageInfoOpenCV imageInfoOpenCV = new(filePath);
                         Width = imageInfoOpenCV.Width;
                         Height = imageInfoOpenCV.Height;
                         ChannelCount = imageInfoOpenCV.ChannelCount;
@@ -27,22 +27,22 @@
                     }
                 case LibraryType.LType.ImageSharp:
                     {
-                        using ImageInfoOpenCV imageInfoOpenCV = new(fileName);
-                        Width = imageInfoOpenCV.Width;
-                        Height = imageInfoOpenCV.Height;
-                        ChannelCount = imageInfoOpenCV.ChannelCount;
-                        BitDepth = imageInfoOpenCV.BitDepth;
-                        Bytes = imageInfoOpenCV.Bytes;
+                        using ImageInfoImageSharp imageInfoImageSharp = new(filePath);
+                        Width = imageInfoImageSharp.Width;
+                        Height = imageInfoImageSharp.Height;
+                        ChannelCount = imageInfoImageSharp.ChannelCount;
+                        BitDepth = imageInfoImageSharp.BitDepth;
+                        Bytes = imageInfoImageSharp.Bytes;
                         break;
                     }
                 default:
                     {
-                        using ImageInfoOpenCV imageInfoOpenCV = new(fileName);
-                        Width = imageInfoOpenCV.Width;
-                        Height = imageInfoOpenCV.Height;
-                        ChannelCount = imageInfoOpenCV.ChannelCount;
-                        BitDepth = imageInfoOpenCV.BitDepth;
-                        Bytes = imageInfoOpenCV.Bytes;
+                        using ImageInfoImageSharp imageInfoImageSharp = new(filePath);
+                        Width = imageInfoImageSharp.Width;
+                        Height = imageInfoImageSharp.Height;
+                        ChannelCount = imageInfoImageSharp.ChannelCount;
+                        BitDepth = imageInfoImageSharp.BitDepth;
+                        Bytes = imageInfoImageSharp.Bytes;
                         break;
                     }
             }

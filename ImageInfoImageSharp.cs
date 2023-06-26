@@ -58,11 +58,46 @@ namespace ImageAssist
         {
             try
             {
-                using var image = Image.Load<Rgba32>(Bytes);
-                Width = image.Width;
-                Height = image.Height;
-                ChannelCount = 4; // RGBA32 이미지의 채널 수는 항상 4입니다.
-                BitDepth = 32; // RGBA32 이미지의 비트 깊이는 항상 32입니다.
+                using var image = Image.Load(Bytes);
+                var pixelType = image.GetType().GenericTypeArguments[0]; // 이미지의 픽셀 형식 가져오기
+
+                if (pixelType == typeof(Rgb24))
+                {
+                    // RGBA32 이미지인 경우
+                    Width = image.Width;
+                    Height = image.Height;
+                    ChannelCount = 3;
+                    BitDepth = 24;
+                }
+                else if (pixelType == typeof(Rgba32))
+                {
+                    // Rgb24 이미지인 경우
+                    Width = image.Width;
+                    Height = image.Height;
+                    ChannelCount = 4;
+                    BitDepth = 32;
+                }
+                else if (pixelType == typeof(Bgr24))
+                {
+                    // BGR24 이미지인 경우
+                    Width = image.Width;
+                    Height = image.Height;
+                    ChannelCount = 3;
+                    BitDepth = 24;
+                }
+                else if (pixelType == typeof(Bgra32))
+                {
+                    // BGR24 이미지인 경우
+                    Width = image.Width;
+                    Height = image.Height;
+                    ChannelCount = 4;
+                    BitDepth = 32;
+                }
+                else
+                {
+                    // 지원하지 않는 픽셀 형식인 경우
+                    throw new NotSupportedException($"Pixel format '{pixelType.Name}' is not supported.");
+                }
             }
             catch (Exception ex)
             {
