@@ -33,21 +33,20 @@ namespace ImageAssist
 
         #endregion IDisposable
 
-
         private bool disposedValue = false;
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public int ChannelCount { get; private set; }
-        public int BitDepth { get; private set; }
+        public ImageSize ImageSize { get; set; } = new();
         public byte[] Bytes { get; set; }
         public string FileName { get; init; }
+        public EAssistExtension Extension { get; set; }
 
+        [SupportedOSPlatform("windows")]
         public ImageInfoOpenCV(string fileName)
         {
             FileName = fileName;
             try
             {
                 Bytes = System.IO.File.ReadAllBytes(fileName);
+                Extension = DImageInfo.GetImageExtension(Bytes);
                 GetImageInfo();
             }
             catch (Exception ex)
@@ -59,14 +58,15 @@ namespace ImageAssist
         [SupportedOSPlatform("windows")]
         private void GetImageInfo()
         {
+            ImageSize imageSize = new ImageSize();
             try
             {
                 using (var mat = Cv2.ImDecode(Bytes, ImreadModes.AnyColor))
                 {
-                    Width = mat.Width;
-                    Height = mat.Height;
-                    ChannelCount = mat.Channels();
-                    BitDepth = mat.Depth() * 8;
+                    imageSize.Width = mat.Width;
+                    imageSize.Height = mat.Height;
+                    imageSize.Channel = mat.Channels();
+                    imageSize.BitDepth = mat.Depth() * 8;
                 }
             }
             catch (OpenCvSharp.OpenCVException)
@@ -82,12 +82,12 @@ namespace ImageAssist
 
                 using (var image = System.Drawing.Image.FromFile(FileName))
                 {
-                    Width = image.Width;
-                    Height = image.Height;
+                    imageSize.Width = image.Width;
+                    imageSize.Height = image.Height;
                     using (var bitmap = new Bitmap(image))
                     {
-                        ChannelCount = bitmap.PixelFormat.ToString().Contains("Indexed") ? 1 : System.Drawing.Image.GetPixelFormatSize(bitmap.PixelFormat) / 8;
-                        BitDepth = System.Drawing.Image.GetPixelFormatSize(bitmap.PixelFormat);
+                        imageSize.Channel = bitmap.PixelFormat.ToString().Contains("Indexed") ? 1 : System.Drawing.Image.GetPixelFormatSize(bitmap.PixelFormat) / 8;
+                        imageSize.BitDepth = System.Drawing.Image.GetPixelFormatSize(bitmap.PixelFormat);
                     }
                 }
             }

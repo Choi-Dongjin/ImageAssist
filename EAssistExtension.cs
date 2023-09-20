@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace ImageAssist
 {
-    public class LibraryType
-    {
-        public const LType LTypeDefault = LType.ImageSharp;
-    }
-    public enum LType
+    public enum EAssistExtension
     {
         None,
-        OpenCV,
-        ImageSharp,
+        JPENG,
+        PNG,
+        BMP,
+        TIFF,
+        Unknown,
     }
 }
