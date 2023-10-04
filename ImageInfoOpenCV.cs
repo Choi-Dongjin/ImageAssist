@@ -1,5 +1,4 @@
 ﻿using OpenCvSharp;
-using System;
 using System.Drawing;
 using System.Runtime.Versioning;
 
@@ -77,7 +76,7 @@ namespace ImageAssist
                 bool isWindows = (os.Platform == PlatformID.Win32NT);
                 if (!isWindows)
                 {
-                    throw new OpenCvSharp.OpenCVException("Failed to read image in image helper.\r\nSince it is not a Windows operating system, I have not tried other methods.");
+                    throw new OpenCvSharp.OpenCVException("Failed to read _image in _image helper.\r\nSince it is not a Windows operating system, I have not tried other methods.");
                 }
 
                 using (var image = System.Drawing.Image.FromFile(FileName))
@@ -93,8 +92,8 @@ namespace ImageAssist
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred while getting image info: {ex.Message}");
-                throw new OpenCvSharp.OpenCVException("Failed to read image in image helper.");
+                Console.WriteLine($"Error occurred while getting _image info: {ex.Message}");
+                throw new OpenCvSharp.OpenCVException("Failed to read _image in _image helper.");
             }
         }
     }

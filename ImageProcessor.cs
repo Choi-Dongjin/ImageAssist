@@ -31,22 +31,22 @@ namespace ImageAssist
 
         public double StructuralSimilarityIndex()
         {
-            // Calculate the mean of the original image
+            // Calculate the mean of the original _image
             Scalar meanOriginal = Cv2.Mean(_originalImage);
             double meanOrig = meanOriginal.Val0;
 
-            // Calculate the mean of the modified image
+            // Calculate the mean of the modified _image
             Scalar meanModified = Cv2.Mean(_modifiedImage);
             double meanMod = meanModified.Val0;
 
-            // Calculate the standard deviation of the original image
+            // Calculate the standard deviation of the original _image
             Mat diffOriginal = new Mat();
             Cv2.Absdiff(_originalImage, meanOrig, diffOriginal);
             diffOriginal = diffOriginal.Mul(diffOriginal);
             Scalar meanDiffOrig = Cv2.Mean(diffOriginal);
             double stdOrig = Math.Sqrt(meanDiffOrig.Val0);
 
-            // Calculate the standard deviation of the modified image
+            // Calculate the standard deviation of the modified _image
             Mat diffModified = new Mat();
             Cv2.Absdiff(_modifiedImage, meanMod, diffModified);
             diffModified = diffModified.Mul(diffModified);

@@ -4,37 +4,39 @@ using Size = OpenCvSharp.Size;
 
 namespace ImageAssist
 {
-    internal class ImageEditorOpenCV
+    public class ImageEditorOpenCV
     {
-        private Mat image;
+        private Mat _image;
+
+        public Mat GetImage { get { return _image; } }
 
         public ImageEditorOpenCV(string filePath)
         {
-            this.image = new Mat(filePath, ImreadModes.Color);
+            this._image = new Mat(filePath, ImreadModes.Color);
         }
 
         public void Resize(int width, int height)
         {
-            Cv2.Resize(image, image, new Size(width, height), 0, 0, InterpolationFlags.Linear);
+            Cv2.Resize(_image, _image, new Size(width, height), 0, 0, InterpolationFlags.Linear);
         }
 
         public void Rotate(double angle)
         {
-            Point2f center = new Point2f(image.Cols / 2, image.Rows / 2);
+            Point2f center = new Point2f(_image.Cols / 2, _image.Rows / 2);
             Mat rot = Cv2.GetRotationMatrix2D(center, angle, 1.0);
-            Cv2.WarpAffine(image, image, rot, image.Size());
+            Cv2.WarpAffine(_image, _image, rot, _image.Size());
         }
 
         public void Crop(int x, int y, int width, int height)
         {
             Rect cropRect = new Rect(x, y, width, height);
-            image = new Mat(image, cropRect);
+            _image = new Mat(_image, cropRect);
         }
 
         public Point[][] FindContours()
         {
             Mat gray = new Mat();
-            Cv2.CvtColor(image, gray, ColorConversionCodes.BGR2GRAY);
+            Cv2.CvtColor(_image, gray, ColorConversionCodes.BGR2GRAY);
             Cv2.Threshold(gray, gray, 128, 255, ThresholdTypes.Binary);
 
             Point[][] contours;
@@ -55,29 +57,29 @@ namespace ImageAssist
         public double CalculateAverageBrightness()
         {
             Mat gray = new Mat();
-            Cv2.CvtColor(image, gray, ColorConversionCodes.BGR2GRAY);
+            Cv2.CvtColor(_image, gray, ColorConversionCodes.BGR2GRAY);
             Scalar avg = Cv2.Mean(gray);
             return avg.Val0;
         }
 
         public void BilateralFilter(int diameter, double sigmaColor, double sigmaSpace)
         {
-            Cv2.BilateralFilter(image, image, diameter, sigmaColor, sigmaSpace, BorderTypes.Reflect101);
+            Cv2.BilateralFilter(_image, _image, diameter, sigmaColor, sigmaSpace, BorderTypes.Reflect101);
         }
 
         public void GaussianBlur(Size size, double sigmaX, double sigmaY)
         {
-            Cv2.GaussianBlur(image, image, size, sigmaX, sigmaY, BorderTypes.Reflect101);
+            Cv2.GaussianBlur(_image, _image, size, sigmaX, sigmaY, BorderTypes.Reflect101);
         }
 
         public void MedianBlur(int ksize)
         {
-            Cv2.MedianBlur(image, image, ksize);
+            Cv2.MedianBlur(_image, _image, ksize);
         }
 
         public void Save(string filePath)
         {
-            Cv2.ImWrite(filePath, image);
+            Cv2.ImWrite(filePath, _image);
         }
     }
 }

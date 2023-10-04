@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static ImageAssist.LibraryType;
 
 namespace ImageAssist
 {
     public class ImageEditor
     {
-        public ImageEditor() { }
+        public ImageEditor(string filePath, LType lType = LTypeDefault)
+        {
+
+        }
 
     }
 }

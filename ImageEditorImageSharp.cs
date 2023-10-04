@@ -1,12 +1,12 @@
 ﻿namespace ImageAssist
 {
-    internal class ImageEditorImageSharp
+    public class ImageEditorImageSharp
     {
         private Image<Rgba32> image;
 
         public ImageEditorImageSharp(string filePath)
         {
-            this.image = Image.Load<Rgba32>(filePath);
+            this.image = SixLabors.ImageSharp.Image.Load<Rgba32>(filePath);
         }
 
         public void Resize(int width, int height)

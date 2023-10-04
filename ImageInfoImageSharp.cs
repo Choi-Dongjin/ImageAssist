@@ -1,6 +1,4 @@
-﻿using Image = SixLabors.ImageSharp.Image;
-
-namespace ImageAssist
+﻿namespace ImageAssist
 {
     public class ImageInfoImageSharp : IDisposable
     {
@@ -48,7 +46,7 @@ namespace ImageAssist
                 ImageSize = new();
                 try
                 {
-                    using var image = Image.Load(Bytes);
+                    using var image = SixLabors.ImageSharp.Image.Load(Bytes);
                     var pixelType = image.GetType().GenericTypeArguments[0]; // 이미지의 픽셀 형식 가져오기
 
                     if (pixelType == typeof(Rgb24))
@@ -91,8 +89,8 @@ namespace ImageAssist
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error occurred while getting image info: {ex.Message}");
-                    throw new Exception("Failed to read image in image helper.");
+                    Console.WriteLine($"Error occurred while getting _image info: {ex.Message}");
+                    throw new Exception("Failed to read _image in _image helper.");
                 }
 
             }

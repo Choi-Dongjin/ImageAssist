@@ -41,7 +41,7 @@ namespace ImageAssist
             }
         }
 
-        // Get image extension based on file signature
+        // Get _image extension based on file signature
         internal static EAssistExtension GetImageExtension(byte[] bytes)
         {
             if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xD8) // JPEG signature
@@ -62,7 +62,7 @@ namespace ImageAssist
             {
                 return EAssistExtension.TIFF;
             }
-            // Add more signatures for other image formats if needed
+            // Add more signatures for other _image formats if needed
 
             return EAssistExtension.Unknown; // LTypeDefault extension if signature is not recognized
         }
