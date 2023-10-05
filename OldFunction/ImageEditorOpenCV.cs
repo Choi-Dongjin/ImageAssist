@@ -2,7 +2,7 @@
 using Point = OpenCvSharp.Point;
 using Size = OpenCvSharp.Size;
 
-namespace ImageAssist
+namespace ImageAssist.OldFunction
 {
     public class ImageEditorOpenCV
     {
@@ -12,7 +12,7 @@ namespace ImageAssist
 
         public ImageEditorOpenCV(string filePath)
         {
-            this._image = new Mat(filePath, ImreadModes.Color);
+            _image = new Mat(filePath, ImreadModes.Color);
         }
 
         public void Resize(int width, int height)

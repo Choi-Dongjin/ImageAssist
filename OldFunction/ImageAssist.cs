@@ -1,8 +1,9 @@
-﻿using OpenCvSharp;
+﻿using ImageAssist.SupportType;
+using OpenCvSharp;
 using System.Drawing;
 using System.Runtime.Versioning;
 
-namespace ImageAssist
+namespace ImageAssist.OldFunction
 {
     public class ImageAssist
     {
@@ -89,14 +90,14 @@ namespace ImageAssist
             return croppedImages;
         }
 
-        public static List<SixLabors.ImageSharp.Image<Rgba32>> ImageCropRatio(SixLabors.ImageSharp.Image<Rgba32> imageMat, int divisionsX, int divisionsY)
+        public static List<Image<Rgba32>> ImageCropRatio(Image<Rgba32> imageMat, int divisionsX, int divisionsY)
         {
 
 
             return new();
         }
 
-        public static bool ImageSave(Mat mat, string path, EAssistExtension imageExt)
+        public static bool ImageSave(Mat mat, string path, ESupportedExtensions imageExt)
         {
             ImwriteFlags imwriteFlags;
             ImageEncodingParam imageEncodingParam;
@@ -107,25 +108,25 @@ namespace ImageAssist
             {
                 switch (imageExt)
                 {
-                    case EAssistExtension.JPENG:
+                    case ESupportedExtensions.JPEG:
                         imwriteFlags = ImwriteFlags.JpegQuality;
                         imageEncodingParam = new(imwriteFlags, 100);
                         IsSave = Cv2.ImWrite(Path.Combine(dir, filename + ".jpg"), mat, imageEncodingParam);
                         break;
 
-                    case EAssistExtension.PNG:
+                    case ESupportedExtensions.PNG:
                         imwriteFlags = ImwriteFlags.PngCompression;
                         imageEncodingParam = new(imwriteFlags, 0);
                         IsSave = mat.ImWrite(Path.Combine(dir, filename + ".png"), imageEncodingParam);
                         break;
 
-                    case EAssistExtension.BMP:
+                    case ESupportedExtensions.BMP:
                         imwriteFlags = ImwriteFlags.WebPQuality;
                         imageEncodingParam = new(imwriteFlags, 1000);
                         IsSave = mat.ImWrite(Path.Combine(dir, filename + ".bmp"));
                         break;
 
-                    case EAssistExtension.TIFF:
+                    case ESupportedExtensions.TIFF:
                         imwriteFlags = ImwriteFlags.TiffResUnit;
                         imageEncodingParam = new(imwriteFlags, 600);
                         IsSave = mat.ImWrite(Path.Combine(dir, filename + ".tiff"));

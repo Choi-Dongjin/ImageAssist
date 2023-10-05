@@ -1,7 +1,7 @@
 ﻿using OpenCvSharp;
 using Point = OpenCvSharp.Point;
 
-namespace ImageAssist
+namespace ImageAssist.OldFunction
 {
     public class ImageAssistExtension
     {

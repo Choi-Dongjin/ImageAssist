@@ -1,4 +1,4 @@
-﻿namespace ImageAssist
+﻿namespace ImageAssist.OldFunction
 {
     public class ImageEditorImageSharp
     {
@@ -6,7 +6,7 @@
 
         public ImageEditorImageSharp(string filePath)
         {
-            this.image = SixLabors.ImageSharp.Image.Load<Rgba32>(filePath);
+            image = Image.Load<Rgba32>(filePath);
         }
 
         public void Resize(int width, int height)

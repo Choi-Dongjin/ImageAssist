@@ -1,8 +1,10 @@
-﻿using OpenCvSharp;
+﻿using ImageAssist.DataFormat;
+using ImageAssist.SupportType;
+using OpenCvSharp;
 using System.Drawing;
 using System.Runtime.Versioning;
 
-namespace ImageAssist
+namespace ImageAssist.OldFunction
 {
     public class ImageInfoOpenCV : IDisposable
     {
@@ -33,10 +35,10 @@ namespace ImageAssist
         #endregion IDisposable
 
         private bool disposedValue = false;
-        public ImageSize ImageSize { get; set; } = new();
+        public DImageSize ImageSize { get; set; } = new();
         public byte[] Bytes { get; set; }
         public string FileName { get; init; }
-        public EAssistExtension Extension { get; set; }
+        public ESupportedExtensions Extension { get; set; }
 
         [SupportedOSPlatform("windows")]
         public ImageInfoOpenCV(string fileName)
@@ -44,20 +46,20 @@ namespace ImageAssist
             FileName = fileName;
             try
             {
-                Bytes = System.IO.File.ReadAllBytes(fileName);
+                Bytes = File.ReadAllBytes(fileName);
                 Extension = DImageInfo.GetImageExtension(Bytes);
                 GetImageInfo();
             }
             catch (Exception ex)
             {
-                throw new System.IO.IOException(ex.ToString());
+                throw new IOException(ex.ToString());
             }
         }
 
         [SupportedOSPlatform("windows")]
         private void GetImageInfo()
         {
-            ImageSize imageSize = new ImageSize();
+            DImageSize imageSize = new DImageSize();
             try
             {
                 using (var mat = Cv2.ImDecode(Bytes, ImreadModes.AnyColor))
@@ -68,15 +70,15 @@ namespace ImageAssist
                     imageSize.BitDepth = mat.Depth() * 8;
                 }
             }
-            catch (OpenCvSharp.OpenCVException)
+            catch (OpenCVException)
             {
                 // 현재 운영 체제 정보 가져오기
                 OperatingSystem os = Environment.OSVersion;
                 // 플랫폼이 Windows인지 확인
-                bool isWindows = (os.Platform == PlatformID.Win32NT);
+                bool isWindows = os.Platform == PlatformID.Win32NT;
                 if (!isWindows)
                 {
-                    throw new OpenCvSharp.OpenCVException("Failed to read _image in _image helper.\r\nSince it is not a Windows operating system, I have not tried other methods.");
+                    throw new OpenCVException("Failed to read _image in _image helper.\r\nSince it is not a Windows operating system, I have not tried other methods.");
                 }
 
                 using (var image = System.Drawing.Image.FromFile(FileName))
@@ -93,7 +95,7 @@ namespace ImageAssist
             catch (Exception ex)
             {
                 Console.WriteLine($"Error occurred while getting _image info: {ex.Message}");
-                throw new OpenCvSharp.OpenCVException("Failed to read _image in _image helper.");
+                throw new OpenCVException("Failed to read _image in _image helper.");
             }
         }
     }

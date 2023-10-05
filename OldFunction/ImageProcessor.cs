@@ -1,6 +1,6 @@
 ﻿using OpenCvSharp;
 
-namespace ImageAssist
+namespace ImageAssist.OldFunction
 {
     public class ImageProcessor
     {
@@ -61,7 +61,7 @@ namespace ImageAssist
             double cov = meanDiff.Val0;
 
             // Calculate the SSIM score
-            double ssim = ((2 * meanOrig * meanMod + 0.01) * (2 * cov + 0.03)) / ((meanOrig * meanOrig + meanMod * meanMod + 0.01) * (stdOrig * stdOrig + stdMod * stdMod + 0.03));
+            double ssim = (2 * meanOrig * meanMod + 0.01) * (2 * cov + 0.03) / ((meanOrig * meanOrig + meanMod * meanMod + 0.01) * (stdOrig * stdOrig + stdMod * stdMod + 0.03));
             return ssim;
         }
 

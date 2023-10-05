@@ -1,4 +1,7 @@
-﻿namespace ImageAssist
+﻿using ImageAssist.DataFormat;
+using ImageAssist.SupportType;
+
+namespace ImageAssist.OldFunction
 {
     public class ImageInfoImageSharp : IDisposable
     {
@@ -31,22 +34,22 @@
 
         #endregion IDisposable
 
-        public ImageSize ImageSize { get; set; }
+        public DImageSize ImageSize { get; set; }
         public byte[] Bytes { get; set; }
         public string FileName { get; init; }
-        public EAssistExtension Extension { get; set; }
+        public ESupportedExtensions Extension { get; set; }
 
         public ImageInfoImageSharp(string fileName)
         {
             FileName = fileName;
             try
             {
-                Bytes = System.IO.File.ReadAllBytes(fileName);
+                Bytes = File.ReadAllBytes(fileName);
                 Extension = DImageInfo.GetImageExtension(Bytes);
                 ImageSize = new();
                 try
                 {
-                    using var image = SixLabors.ImageSharp.Image.Load(Bytes);
+                    using var image = Image.Load(Bytes);
                     var pixelType = image.GetType().GenericTypeArguments[0]; // 이미지의 픽셀 형식 가져오기
 
                     if (pixelType == typeof(Rgb24))
@@ -96,7 +99,7 @@
             }
             catch (Exception ex)
             {
-                throw new System.IO.IOException(ex.ToString());
+                throw new IOException(ex.ToString());
             }
         }
     }
