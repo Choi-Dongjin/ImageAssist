@@ -33,6 +33,13 @@ namespace ImageAssist.OldFunction
             _image = new Mat(_image, cropRect);
         }
 
+        public void Draw(int x, int y, int width, int height, int r, int g, int b, int thickness = 1)
+        {
+            Rect cropRect = new(x, y, width, height);
+            Scalar scalar = Scalar.FromRgb(r, g, b);
+            Cv2.Rectangle(_image, cropRect, scalar, thickness);
+        }
+
         public Point[][] FindContours()
         {
             Mat gray = new Mat();

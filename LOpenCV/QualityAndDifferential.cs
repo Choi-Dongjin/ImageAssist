@@ -1,4 +1,5 @@
 ﻿using ImageAssist.SupportedFunction;
+using ImageAssist.Utile;
 using OpenCvSharp;
 
 namespace ImageAssist.LOpenCV
@@ -11,7 +12,7 @@ namespace ImageAssist.LOpenCV
         /// <param name="originalImage"></param>
         /// <param name="modifiedImage"></param>
         /// <returns></returns>
-        public double MeanSquaredError(ref Mat originalImage, ref Mat modifiedImage)
+        public static double MeanSquaredError(ref Mat originalImage, ref Mat modifiedImage)
         {
             Mat diff = new();
             Cv2.Absdiff(originalImage, modifiedImage, diff);
@@ -26,7 +27,7 @@ namespace ImageAssist.LOpenCV
         /// <param name="originalImage"></param>
         /// <param name="modifiedImage"></param>
         /// <returns></returns>
-        public double PeakSignalToNoiseRatio(ref Mat originalImage, ref Mat modifiedImage)
+        public static double PeakSignalToNoiseRatio(ref Mat originalImage, ref Mat modifiedImage)
         {
             double mse = MeanSquaredError(ref originalImage, ref modifiedImage);
             double psnr = 10 * Math.Log10(255 * 255 / mse);
@@ -39,7 +40,7 @@ namespace ImageAssist.LOpenCV
         /// <param name="originalImage"></param>
         /// <param name="modifiedImage"></param>
         /// <returns></returns>
-        public double StructuralSimilarityIndexMeasure(ref Mat originalImage, ref Mat modifiedImage)
+        public static double StructuralSimilarityIndexMeasure(ref Mat originalImage, ref Mat modifiedImage)
         {
             // Calculate the mean of the original _image
             Scalar meanOriginal = Cv2.Mean(originalImage);
@@ -81,7 +82,7 @@ namespace ImageAssist.LOpenCV
         /// <param name="originalImage"></param>
         /// <param name="modifiedImage"></param>
         /// <returns></returns>
-        public double DeltaE(ref Mat originalImage, ref Mat modifiedImage)
+        public static double DeltaE(ref Mat originalImage, ref Mat modifiedImage)
         {
             Mat labOriginal = new Mat();
             Mat labModified = new Mat();
@@ -95,6 +96,55 @@ namespace ImageAssist.LOpenCV
 
             double deltaE = Math.Sqrt(mean.Val0 + mean.Val1 + mean.Val2);
             return deltaE;
+        }
+
+        double IQualityAndDifferential.MeanSquaredError(ref object originalImage, ref object modifiedImage)
+        {
+            if (originalImage is not Mat convertOrgImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), originalImage.GetType()); }
+            if (modifiedImage is not Mat convertModImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), modifiedImage.GetType()); }
+
+            double value = MeanSquaredError(ref convertOrgImage, ref convertModImage);
+            convertOrgImage.Dispose();
+            convertModImage.Dispose();
+            return value;
+        }
+
+        double IQualityAndDifferential.PeakSignalToNoiseRatio(ref object originalImage, ref object modifiedImage)
+        {
+            if (originalImage is not Mat convertOrgImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), originalImage.GetType()); }
+            if (modifiedImage is not Mat convertModImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), modifiedImage.GetType()); }
+            double value = PeakSignalToNoiseRatio(ref convertOrgImage, ref convertModImage);
+            convertOrgImage.Dispose();
+            convertModImage.Dispose();
+            return value;
+        }
+
+        double IQualityAndDifferential.StructuralSimilarityIndexMeasure(ref object originalImage, ref object modifiedImage)
+        {
+            if (originalImage is not Mat convertOrgImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), originalImage.GetType()); }
+            if (modifiedImage is not Mat convertModImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), modifiedImage.GetType()); }
+            double value = StructuralSimilarityIndexMeasure(ref convertOrgImage, ref convertModImage);
+            convertOrgImage.Dispose();
+            convertModImage.Dispose();
+            return value;
+        }
+
+        double IQualityAndDifferential.DeltaE(ref object originalImage, ref object modifiedImage)
+        {
+            if (originalImage is not Mat convertOrgImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), originalImage.GetType()); }
+            if (modifiedImage is not Mat convertModImage)
+            { return (ulong)ErrorThrowHelper.InputTypeError(new Mat(), modifiedImage.GetType()); }
+            double value = DeltaE(ref convertOrgImage, ref convertModImage);
+            convertOrgImage.Dispose();
+            convertModImage.Dispose();
+            return value;
         }
     }
 }

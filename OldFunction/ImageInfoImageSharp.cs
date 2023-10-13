@@ -1,5 +1,6 @@
 ﻿using ImageAssist.DataFormat;
 using ImageAssist.SupportType;
+using static ImageAssist.Utile.ExtensionFunction;
 
 namespace ImageAssist.OldFunction
 {
@@ -44,12 +45,13 @@ namespace ImageAssist.OldFunction
             FileName = fileName;
             try
             {
-                Bytes = File.ReadAllBytes(fileName);
-                Extension = DImageInfo.GetImageExtension(Bytes);
+                byte[] bytes = File.ReadAllBytes(fileName);
+                Bytes = bytes;
+                Extension = GuessImageExtension(ref bytes);
                 ImageSize = new();
                 try
                 {
-                    using var image = Image.Load(Bytes);
+                    using var image = Image.Load(bytes);
                     var pixelType = image.GetType().GenericTypeArguments[0]; // 이미지의 픽셀 형식 가져오기
 
                     if (pixelType == typeof(Rgb24))

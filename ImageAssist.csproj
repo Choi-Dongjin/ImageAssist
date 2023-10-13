@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="LOpenCV\" />
-    <Folder Include="SupportedFunction\" />
+    <ProjectReference Include="..\FileIOAssist\FileIOAssist.csproj" />
   </ItemGroup>
 
 </Project>

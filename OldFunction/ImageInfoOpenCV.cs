@@ -3,6 +3,7 @@ using ImageAssist.SupportType;
 using OpenCvSharp;
 using System.Drawing;
 using System.Runtime.Versioning;
+using static ImageAssist.Utile.ExtensionFunction;
 
 namespace ImageAssist.OldFunction
 {
@@ -46,8 +47,9 @@ namespace ImageAssist.OldFunction
             FileName = fileName;
             try
             {
-                Bytes = File.ReadAllBytes(fileName);
-                Extension = DImageInfo.GetImageExtension(Bytes);
+                byte[] bytes = File.ReadAllBytes(fileName);
+                Bytes = bytes;
+                Extension = GuessImageExtension(ref bytes);
                 GetImageInfo();
             }
             catch (Exception ex)
