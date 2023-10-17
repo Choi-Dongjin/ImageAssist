@@ -8,7 +8,7 @@ namespace ImageAssist.DataFormat
     {
         public string FilePath { get; init; }
         public string Encoding { get { return Extension.ToString(); } }
-        public DImageSize ImageSize { get; init; }
+        public DImageSize OriginImageSize { get; set; }
         public LType LType { get; init; }
         public ESupportedExtensions Extension { get; init; }
         public byte[]? Bytes { get; set; }
@@ -16,7 +16,7 @@ namespace ImageAssist.DataFormat
         public DImageInfo()
         {
             FilePath = string.Empty;
-            ImageSize = new();
+            OriginImageSize = new();
             Extension = ESupportedExtensions.None;
         }
 
@@ -26,7 +26,7 @@ namespace ImageAssist.DataFormat
             FilePath = filePath;
             LType = ImageAssistSystemDefault.LTypeDefault;
             using ImageInfoOpenCV imageInfoOpenCV = new(filePath);
-            ImageSize = imageInfoOpenCV.ImageSize;
+            OriginImageSize = imageInfoOpenCV.ImageSize;
             Extension = imageInfoOpenCV.Extension;
         }
 
@@ -44,7 +44,7 @@ namespace ImageAssist.DataFormat
                 case LType.OpenCV:
                     {
                         using ImageInfoOpenCV imageInfoOpenCV = new(filePath);
-                        ImageSize = imageInfoOpenCV.ImageSize;
+                        OriginImageSize = imageInfoOpenCV.ImageSize;
                         Extension = imageInfoOpenCV.Extension;
                         if (includeRowImage)
                             Bytes = imageInfoOpenCV.Bytes;
@@ -53,7 +53,7 @@ namespace ImageAssist.DataFormat
                 case LType.ImageSharp:
                     {
                         using ImageInfoImageSharp imageInfoImageSharp = new(filePath);
-                        ImageSize = imageInfoImageSharp.ImageSize;
+                        OriginImageSize = imageInfoImageSharp.ImageSize;
                         Extension = imageInfoImageSharp.Extension;
                         if (includeRowImage)
                             Bytes = imageInfoImageSharp.Bytes;
