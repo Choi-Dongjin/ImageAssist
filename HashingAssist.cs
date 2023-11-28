@@ -157,6 +157,7 @@ namespace ImageAssist
             HammingSimilarityThreshold = hashingAssistOption.HammingSimilarityThreshold;
             SupportLibrary = hashingAssistOption.SupportLibrary;
             SupportHashType = hashingAssistOption.SupportHashType;
+            HashAnalysis = hashingAssistOption.HashAnalysisType;
             _imageHash = SupportLibrary switch
             {
                 LType.OpenCV => new LOpenCV.PerceptualHashing(SupportHashType),
@@ -279,10 +280,11 @@ namespace ImageAssist
         private async Task<List<string>> GetImagePaths(IEnumerable<string> imageDir, CancellationToken ct)
         {
             List<string> imagePaths = new();
-            string[] ext = Enum.GetNames(typeof(ESupportedExtensions));
+            List<string> ext = Enum.GetNames(typeof(ESupportedExtensions)).ToList();
+            ext.Add("JPG");
             foreach (var workingDirectory in WorkingDirectorys)
             {
-                imagePaths.AddRange(await Task.Run(() => FileIOAssist.Extension.DirFileSerch(workingDirectory, ext, FileIOAssist.Extension.GetNameType.Full, FileIOAssist.Extension.SubSearch.Full, ct)));
+                imagePaths.AddRange(await Task.Run(() => FileIOAssist.Extension.DirFileSearch(workingDirectory, ext.ToArray(), FileIOAssist.Extension.GetNameType.Full, FileIOAssist.Extension.SubSearch.Full, ct)));
             }
             return imagePaths;
         }
@@ -298,7 +300,7 @@ namespace ImageAssist
             // 이미지를 로드합니다.
             Mat image = Cv2.ImRead(imagefilePath, ImreadModes.Grayscale);
             // 이미지를 DHash로 해싱합니다.
-            return _imageHash.GetHash(filePath, null);
+            return _imageHash.GetHash(image, null);
         }
 
         /// <summary>
@@ -315,13 +317,15 @@ namespace ImageAssist
             ulong dhash = imageHash.Hash;
 
             // 이미지를 다른 그룹에 할당할지 결정합니다.
-            double pHashAnalysis = 0;
+            double pHashAnalysisSimilarity = HammingSimilarityThreshold;
+            double pHashAnalysisDistance = HammingDistanceThreshold;
             string addKey = "";
             foreach (var groupKey in _imageGroups.Keys)
             {
                 if (ct.IsCancellationRequested) { break; }
 
                 ulong groupDHash = ulong.Parse(groupKey);
+                bool pass = false;
 
                 switch (HashAnalysis)
                 {
@@ -331,29 +335,30 @@ namespace ImageAssist
                             // 유사도 이용
                             if (hashAnalysis >= HammingSimilarityThreshold)
                             {
-                                if (pHashAnalysis < hashAnalysis)
+                                if (pHashAnalysisSimilarity < hashAnalysis)
                                 {
-                                    pHashAnalysis = hashAnalysis;
+                                    pHashAnalysisSimilarity = hashAnalysis;
+                                    addKey = groupKey;
                                 }
                             }
                         }
                         break;
                     default:
                         {
-
                             double hashAnalysis = CalculateHash.HammingDistance.Distance(dhash, groupDHash);
                             // 해밍 거리가 임계값 이내인 경우 이미지를 그룹에 할당합니다.
-                            if (hashAnalysis <= HammingDistanceThreshold)
+                            if (hashAnalysis < HammingDistanceThreshold)
                             {
-                                if (pHashAnalysis > hashAnalysis)
+                                if (pHashAnalysisDistance > hashAnalysis)
                                 {
-                                    pHashAnalysis = hashAnalysis;
+                                    pHashAnalysisDistance = hashAnalysis;
                                     addKey = groupKey;
                                 }
                             }
                         }
                         break;
                 }
+                if (pass == true) { break; }
             }
 
             if (string.IsNullOrEmpty(addKey))

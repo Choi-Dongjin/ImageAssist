@@ -64,13 +64,11 @@ namespace ImageAssist.OldFunction
             DImageSize imageSize = new DImageSize();
             try
             {
-                using (var mat = Cv2.ImDecode(Bytes, ImreadModes.AnyColor))
-                {
-                    imageSize.Width = mat.Width;
-                    imageSize.Height = mat.Height;
-                    imageSize.Channel = mat.Channels();
-                    imageSize.BitDepth = mat.Depth() * 8;
-                }
+                using var mat = Cv2.ImDecode(Bytes, ImreadModes.AnyColor);
+                imageSize.Width = mat.Width;
+                imageSize.Height = mat.Height;
+                imageSize.Channel = mat.Channels();
+                imageSize.BitDepth = mat.Depth() * 8;
             }
             catch (OpenCVException)
             {

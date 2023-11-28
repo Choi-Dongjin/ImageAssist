@@ -8,11 +8,11 @@ namespace ImageAssist.Utile
         /// 파일 이름에서 확장자 가져오기 & 지원하는 확장자인지 확인
         /// </summary>
         /// <param name="fileName"></param>
-        /// <returns></returns>
+        /// <returns> 반환값이 None or Unknown 이면 다른 처리 필요 </returns>
         public static ESupportedExtensions GetExtensionFromFileName(string fileName)
         {
             string fileExtension = System.IO.Path.GetExtension(fileName).ToUpper();
-            ESupportedExtensions ext = new();
+            ESupportedExtensions ext = ESupportedExtensions.Unknown;
 
             switch (fileExtension)
             {
@@ -40,7 +40,6 @@ namespace ImageAssist.Utile
             return ext;
         }
 
-
         // Get _image supportedExt based on file signature
         /// <summary>
         /// 파일 데이터에서 확장자 예측
@@ -51,18 +50,19 @@ namespace ImageAssist.Utile
         {
             byte[] header = new byte[8]; // 이미지 헤더를 읽을 바이트 배열 크기
 
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new(fileName, FileMode.Open, FileAccess.Read))
             {
                 fs.Read(header, 0, header.Length);
             }
             return GuessImageExtension(ref header);
         }
+
         /// <summary>
         /// 파일 데이터에서 확장자 예측
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        internal static ESupportedExtensions GuessImageExtension(ref byte[] bytes)
+        public static ESupportedExtensions GuessImageExtension(ref byte[] bytes)
         {
             if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xD8) // JPEG signature
             {

@@ -3,6 +3,7 @@
     public enum LType
     {
         None,
+        Drawing,
         OpenCV,
         ImageSharp,
     }
