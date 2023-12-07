@@ -29,11 +29,12 @@ namespace ImageAssist.LOpenCV
         /// <returns></returns>
         public static Point[]? FindLargestContour(Mat channel, double thresh, double maxval)
         {
+            Mat mat = channel.Clone();
             // 이진화를 위한 임계값 처리
-            Cv2.Threshold(channel, channel, thresh, maxval, ThresholdTypes.Binary);
+            Cv2.Threshold(channel, mat, thresh, maxval, ThresholdTypes.Binary);
 
             // 윤곽선 찾기
-            Cv2.FindContours(channel, out OpenCvSharp.Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+            Cv2.FindContours(mat, out OpenCvSharp.Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
 
             // 가장 큰 윤곽선 찾기
             OpenCvSharp.Point[]? largestContour = null;
@@ -47,6 +48,7 @@ namespace ImageAssist.LOpenCV
                     largestContour = contour;
                 }
             }
+            mat.Dispose();
             return largestContour;
         }
 

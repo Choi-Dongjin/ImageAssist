@@ -35,7 +35,6 @@ namespace ImageAssist.OldFunction
 
         #endregion IDisposable
 
-        private bool disposedValue = false;
         public DImageSize ImageSize { get; set; } = new();
         public byte[] Bytes { get; set; }
         public string FileName { get; init; }

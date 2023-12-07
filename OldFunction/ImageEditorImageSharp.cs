@@ -1,4 +1,8 @@
-﻿namespace ImageAssist.OldFunction
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+
+namespace ImageAssist.OldFunction
 {
     public class ImageEditorImageSharp
     {

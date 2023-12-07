@@ -1,5 +1,6 @@
 ﻿using ImageAssist.SupportType;
 using OpenCvSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Drawing;
 using System.Runtime.Versioning;
 
@@ -90,7 +91,7 @@ namespace ImageAssist.OldFunction
             return croppedImages;
         }
 
-        public static List<Image<Rgba32>> ImageCropRatio(Image<Rgba32> imageMat, int divisionsX, int divisionsY)
+        public static List<SixLabors.ImageSharp.Image<Rgba32>> ImageCropRatio(SixLabors.ImageSharp.Image<Rgba32> imageMat, int divisionsX, int divisionsY)
         {
 
 

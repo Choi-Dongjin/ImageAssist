@@ -23,7 +23,7 @@ namespace ImageAssist.DataFormat
             Extension = ESupportedExtensions.None;
         }
 
-
+        [SupportedOSPlatform("windows")]
         public DImageInfo(string filePath)
         {
             FilePath = filePath;
@@ -34,6 +34,7 @@ namespace ImageAssist.DataFormat
             Extension = imageInfoOpenCV.Extension;
         }
 
+        [SupportedOSPlatform("windows")]
         public DImageInfo(string filePath, LType? lType = LType.Drawing)
         {
             OriginImageSize = new();
@@ -53,6 +54,7 @@ namespace ImageAssist.DataFormat
             OriginImageSize = OSCaseProcessing(filePath, LType) ?? new();
         }
 
+        [SupportedOSPlatform("windows")]
         private static DImageSize? OSCaseProcessing(string file, LType lType)
         {
             var osInfo = Environment.OSVersion; // OS 버전 정보를 가져옴
@@ -61,6 +63,7 @@ namespace ImageAssist.DataFormat
 
             switch (platform)
             {
+
                 case PlatformID.Win32NT: // 대부분의 윈도우 OS 버전
                     Debug.WriteLine("OS is Windows NT based."); // Windows 관련 작업 수행
                     imageSize = OSCaseWindows(file, lType);

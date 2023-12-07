@@ -391,7 +391,7 @@ namespace ImageAssist
                 {
                     Directory.CreateDirectory(imageDir);
                     string fileName = Path.GetFileName(imagePath);
-                    FileIOAssist.Assist.FileCopy(imagePath, Path.Combine(imageDir, fileName));
+                    FileIOAssist.Assist.FileCopy(imagePath, Path.Combine(imageDir, fileName), out string _);
                     Debug.WriteLine(imagePath);
                 }
                 Debug.WriteLine("");

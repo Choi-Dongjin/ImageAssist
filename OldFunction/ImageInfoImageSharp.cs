@@ -1,5 +1,7 @@
 ﻿using ImageAssist.DataFormat;
 using ImageAssist.SupportType;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static ImageAssist.Utile.ExtensionFunction;
 
 namespace ImageAssist.OldFunction
