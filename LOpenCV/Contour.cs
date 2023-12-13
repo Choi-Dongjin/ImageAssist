@@ -13,12 +13,14 @@ namespace ImageAssist.LOpenCV
         /// <returns></returns>
         public static Point[][] FindAndSortContoursByArea(Mat channel, double thresh, double maxval)
         {
+            Mat contourMat = new();
             // 이진화를 위한 임계값 처리
-            Cv2.Threshold(channel, channel, thresh, maxval, ThresholdTypes.Binary);
+            Cv2.Threshold(channel, contourMat, thresh, maxval, ThresholdTypes.Binary);
             // 윤곽선 찾기
-            Cv2.FindContours(channel, out OpenCvSharp.Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+            Cv2.FindContours(contourMat, out OpenCvSharp.Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
             // 윤곽선을 면적에 따라 정렬
             var sortedContours = contours.OrderByDescending(c => Cv2.ContourArea(c)).ToArray();
+            contourMat.Dispose();
             return sortedContours;
         }
 
@@ -59,8 +61,8 @@ namespace ImageAssist.LOpenCV
         public static (Mat crop, Point center) CropAndPrintContourInfo(Mat src, Point[] contour)
         {
             Rect boundingBox = Cv2.BoundingRect(contour);
-            Point center = new Point(boundingBox.X + boundingBox.Width / 2, boundingBox.Y + boundingBox.Height / 2);
-            Mat cropped = new Mat(src, boundingBox);
+            Point center = new(boundingBox.X + boundingBox.Width / 2, boundingBox.Y + boundingBox.Height / 2);
+            Mat cropped = new(src, boundingBox);
             return (cropped, center);
         }
 
