@@ -93,21 +93,6 @@ namespace ImageAssist.LOpenCV
         }
 
         /// <summary>
-        /// 바이트 배열로 변환
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
-        public static byte[] ExtractData(Mat src)
-        {
-            // 바이트 배열로 변환
-            int row = src.Width;
-            int cols = src.Height;
-            byte[] redChannelData = new byte[row * cols];
-            src.GetArray(out redChannelData);
-            return redChannelData;
-        }
-
-        /// <summary>
         /// 바이트 배열을 Mat 객체로
         /// </summary>
         /// <param name="byteArray"></param>
@@ -127,5 +112,20 @@ namespace ImageAssist.LOpenCV
             return mat;
         }
 
+        /// <summary>
+        /// 윤곽선 내부 이미지만 취득
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="contours"></param>
+        /// <returns></returns>
+        public static Mat ExtractContourInterior(Mat src, Point[][] contours)
+        {
+            Mat mask = Mat.Zeros(src.Size(), MatType.CV_8UC1);
+            Cv2.DrawContours(mask, contours, -1, Scalar.White, thickness: -1);
+            // 마스크를 이용하여 원본 이미지에서 컨투어 내부의 영역만 추출합니다.
+            Mat result = new();
+            src.CopyTo(result, mask);
+            return result;
+        }
     }
 }
