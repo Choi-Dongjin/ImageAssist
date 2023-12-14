@@ -61,7 +61,7 @@ namespace ImageAssist.LOpenCV
         public static (Mat crop, Point center) CropAndPrintContourInfo(Mat src, Point[] contour)
         {
             Rect boundingBox = Cv2.BoundingRect(contour);
-            Point center = new(boundingBox.X + boundingBox.Width / 2, boundingBox.Y + boundingBox.Height / 2);
+            Point center = new(boundingBox.X, boundingBox.Y);
             Mat cropped = new(src, boundingBox);
             return (cropped, center);
         }
@@ -75,7 +75,7 @@ namespace ImageAssist.LOpenCV
             Point[]? contour = FindLargestContour(src, thresh, maxval);
             if (contour == null) { throw new ArgumentNullException(nameof(contour)); }
             Rect boundingBox = Cv2.BoundingRect(contour);
-            Point center = new(boundingBox.X + boundingBox.Width / 2, boundingBox.Y + boundingBox.Height / 2);
+            Point center = new(boundingBox.X, boundingBox.Y);
             Mat cropped = new(src, boundingBox);
             return (cropped, center);
         }
@@ -145,6 +145,12 @@ namespace ImageAssist.LOpenCV
                     // 큰 윤곽선 안에 작은 윤곽선이 있다면 큰 윤곽선만을 추가
                     if (!IsContourInsideAny(mergedContours, contour))
                     {
+                        mergedContours.Add(contour);
+                    }
+                    else
+                    {
+                        // 큰 윤곽선 안에 작은 윤곽선이 있을 경우, 이미 추가된 윤곽선을 제거하고 새로운 윤곽선을 추가
+                        mergedContours.RemoveAll(existingContour => IsContourInsideAny(new List<Point[]> { existingContour }, contour));
                         mergedContours.Add(contour);
                     }
                 }
