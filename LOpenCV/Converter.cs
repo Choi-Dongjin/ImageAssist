@@ -1,5 +1,8 @@
 ﻿using ImageAssist.DataFormat;
 using OpenCvSharp;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace ImageAssist.LOpenCV
 {
@@ -31,6 +34,52 @@ namespace ImageAssist.LOpenCV
             Mat result = new Mat(imageSize.Height, imageSize.Width, imageSize.BitDepth, imageSize.Channel);
             result.CopyTo(src);
             return result;
+        }
+
+        /// <summary>
+        /// Mat을 Bitmap으로 변환하는 함수
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Bitmap MatToBitmap(Mat mat)
+        {
+            if (mat == null)
+                throw new ArgumentNullException(nameof(mat));
+
+            // Mat 데이터를 바이트 배열로 가져오기
+            byte[] data = new byte[mat.Total() * mat.ElemSize()];
+            Marshal.Copy(mat.Data, data, 0, data.Length);
+
+            // Mat의 색상 채널 및 크기 가져오기
+            int channels = mat.Channels();
+            int width = mat.Width;
+            int height = mat.Height;
+
+            // Bitmap 생성
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+
+            // Bitmap 데이터를 바이트 배열로 가져오기
+            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+            byte[] bitmapBytes = new byte[bitmapData.Stride * height];
+
+            // Mat 데이터를 Bitmap으로 복사
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    for (int c = 0; c < channels; c++)
+                    {
+                        bitmapBytes[y * bitmapData.Stride + x * channels + c] = data[y * width * channels + x * channels + c];
+                    }
+                }
+            }
+
+            Marshal.Copy(bitmapBytes, 0, bitmapData.Scan0, bitmapBytes.Length);
+
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmap;
         }
     }
 }

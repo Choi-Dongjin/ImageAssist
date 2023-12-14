@@ -127,5 +127,56 @@ namespace ImageAssist.LOpenCV
             src.CopyTo(result, mask);
             return result;
         }
+
+        public static Point[][] MergeContours(Point[][] contours1, Point[][] contours2)
+        {
+            var mergedContours = new List<Point[]>();
+
+            // 첫 번째 이미지의 윤곽선 추가
+            mergedContours.AddRange(contours1);
+
+            // 두 번째 이미지의 윤곽선에 대해 처리
+            foreach (var contour in contours2)
+            {
+                double a = Cv2.ContourArea(contour);
+                // 겹치는 부분을 확인하여 이미 추가된 윤곽선과 겹친다면 추가하지 않음
+                if (!IsContourOverlapping(mergedContours, contour))
+                {
+                    // 큰 윤곽선 안에 작은 윤곽선이 있다면 큰 윤곽선만을 추가
+                    if (!IsContourInsideAny(mergedContours, contour))
+                    {
+                        mergedContours.Add(contour);
+                    }
+                }
+            }
+            return mergedContours.ToArray();
+        }
+
+        public static bool IsContourOverlapping(List<Point[]> contours, Point[] newContour)
+        {
+            foreach (var existingContour in contours)
+            {
+                if (Cv2.PointPolygonTest(existingContour, newContour[0], false) >= 0)
+                {
+                    // 겹치는 부분이 있으면 true 반환
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool IsContourInsideAny(List<Point[]> contours, Point[] newContour)
+        {
+            foreach (var existingContour in contours)
+            {
+                if (Cv2.PointPolygonTest(existingContour, newContour[0], true) > 0)
+                {
+                    // 큰 윤곽선 안에 작은 윤곽선이 있다면 true 반환
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 }
