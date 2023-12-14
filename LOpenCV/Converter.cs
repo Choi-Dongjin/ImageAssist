@@ -3,6 +3,7 @@ using OpenCvSharp;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace ImageAssist.LOpenCV
 {
@@ -29,13 +30,13 @@ namespace ImageAssist.LOpenCV
         /// <param name="src"></param>
         /// <param name="imageSize"></param>
         /// <returns></returns>
-        public static Mat ExtractData(Mat src, DImageSize imageSize)
+        public static Mat ExtractData(byte[] src, DImageSize imageSize)
         {
-            Mat result = new Mat(imageSize.Height, imageSize.Width, imageSize.BitDepth, imageSize.Channel);
-            result.CopyTo(src);
+            Mat result = new Mat(imageSize.Height, imageSize.Width, MatType.CV_8UC1, src);
             return result;
         }
 
+        [SupportedOSPlatform("windows")]
         /// <summary>
         /// Mat을 Bitmap으로 변환하는 함수
         /// </summary>
@@ -57,7 +58,7 @@ namespace ImageAssist.LOpenCV
             int height = mat.Height;
 
             // Bitmap 생성
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
 
             // Bitmap 데이터를 바이트 배열로 가져오기
             BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
