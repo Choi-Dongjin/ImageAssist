@@ -125,6 +125,7 @@ namespace ImageAssist.LOpenCV
             // 마스크를 이용하여 원본 이미지에서 컨투어 내부의 영역만 추출합니다.
             Mat result = new();
             src.CopyTo(result, mask);
+            mask.Dispose();
             return result;
         }
 

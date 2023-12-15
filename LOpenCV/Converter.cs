@@ -58,28 +58,35 @@ namespace ImageAssist.LOpenCV
             int height = mat.Height;
 
             // Bitmap 생성
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
 
-            // Bitmap 데이터를 바이트 배열로 가져오기
-            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
-            byte[] bitmapBytes = new byte[bitmapData.Stride * height];
-
-            // Mat 데이터를 Bitmap으로 복사
-            for (int y = 0; y < height; y++)
+            try
             {
-                for (int x = 0; x < width; x++)
+                // Bitmap 데이터를 바이트 배열로 가져오기
+                BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+                byte[] bitmapBytes = new byte[bitmapData.Stride * height];
+
+                // Mat 데이터를 Bitmap으로 복사
+                for (int y = 0; y < height; y++)
                 {
-                    for (int c = 0; c < channels; c++)
+                    for (int x = 0; x < width; x++)
                     {
-                        bitmapBytes[y * bitmapData.Stride + x * channels + c] = data[y * width * channels + x * channels + c];
+                        for (int c = 0; c < channels; c++)
+                        {
+                            bitmapBytes[y * bitmapData.Stride + x * channels + c] = data[y * width * channels + x * channels + c];
+                        }
                     }
                 }
+
+                Marshal.Copy(bitmapBytes, 0, bitmapData.Scan0, bitmapBytes.Length);
+
+                bitmap.UnlockBits(bitmapData);
             }
-
-            Marshal.Copy(bitmapBytes, 0, bitmapData.Scan0, bitmapBytes.Length);
-
-            bitmap.UnlockBits(bitmapData);
-
+            catch (Exception ex)
+            {
+                // 예외 처리: OpenCVException이 발생하면 예외를 다시 던지거나 로깅 등을 수행할 수 있음
+                throw new OpenCVException("Error converting Mat to Bitmap.", ex);
+            }
             return bitmap;
         }
     }
