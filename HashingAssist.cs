@@ -42,11 +42,6 @@ namespace ImageAssist
         public Action<string>? ProgressWork { get; init; }
 
         /// <summary>
-        /// 작업 폴더
-        /// </summary>
-        public List<string> WorkingDirectorys { get; set; }
-
-        /// <summary>
         /// 해싱 사이즈
         /// </summary>
         public System.Drawing.Size HashSize { get; init; }
@@ -132,9 +127,8 @@ namespace ImageAssist
         /// </summary>
         private float _progressRate;
 
-        public HashingAssist(List<string> workingDirectory, System.Drawing.Size hashSize, int hammingDistance, ESupportHashType supportHashType, LType supportLibrary, EHashAnalysisType hashAnalysis)
+        public HashingAssist(System.Drawing.Size hashSize, int hammingDistance, ESupportHashType supportHashType, LType supportLibrary, EHashAnalysisType hashAnalysis)
         {
-            WorkingDirectorys = workingDirectory;
             HashSize = hashSize;
             HammingDistanceThreshold = hammingDistance;
             HammingSimilarityThreshold = 0.99D;
@@ -149,9 +143,8 @@ namespace ImageAssist
             };
         }
 
-        public HashingAssist(List<string> workingDirectory, HashingAssistOption hashingAssistOption)
+        public HashingAssist(HashingAssistOption hashingAssistOption)
         {
-            WorkingDirectorys = workingDirectory;
             HashSize = hashingAssistOption.HashSize;
             HammingDistanceThreshold = hashingAssistOption.HammingDistanceThreshold;
             HammingSimilarityThreshold = hashingAssistOption.HammingSimilarityThreshold;
@@ -170,7 +163,7 @@ namespace ImageAssist
         /// 해싱 시작
         /// </summary>
         /// <returns></returns>
-        public async Task RunImageHash()
+        public async Task RunImageHash(List<string> dirs)
         {
             bool run = false;
             lock (_lock)
@@ -187,7 +180,7 @@ namespace ImageAssist
             lock (_lock) { IsImageHash = false; IsRunImageHash = true; }
 
             ProgressWork?.Invoke("[Hashing] Image Serching. ***");
-            List<string> images = await Task.Run(() => GetImagePaths(WorkingDirectorys, _imageHashCTS.Token));
+            List<string> images = await GetImagePaths(dirs, _imageHashCTS.Token);
 
             ProgressWork?.Invoke("[Hashing] Proceeding. ***");
             void hashing(CancellationToken token)
@@ -206,6 +199,54 @@ namespace ImageAssist
                     if (ProgressRate != null)
                     {
                         ProgressPrint(++hashCount, images.Count);
+                    }
+                }
+            }
+            await Task.Run(() => hashing(_imageHashCTS.Token));
+
+            ProgressWork?.Invoke("[Hashing] Complete. ***");
+            lock (_lock) { IsImageHash = true; IsRunImageHash = false; }
+        }
+
+        /// <summary>
+        /// 해싱 시작
+        /// </summary>
+        /// <returns></returns>
+        public async Task RunImageHash(List<(string, Mat)> mats)
+        {
+            bool run = false;
+            lock (_lock)
+            {
+                if (_imageHashCTS == null)
+                {
+                    _imageHashCTS = new CancellationTokenSource();
+                    run = true;
+                }
+            }
+
+            if (!run) { return; }
+
+            lock (_lock) { IsImageHash = false; IsRunImageHash = true; }
+
+            ProgressWork?.Invoke("[Hashing] Image Serching. ***");
+
+            ProgressWork?.Invoke("[Hashing] Proceeding. ***");
+            void hashing(CancellationToken token)
+            {
+                int hashCount = 0;
+                foreach ((string fileName, Mat image) in mats)
+                {
+                    if (_imageHashCTS.IsCancellationRequested) { break; }
+
+                    _imageHashes.Add(new()
+                    {
+                        FilePath = fileName,
+                        Hash = ImageHashing(image),
+                    });
+
+                    if (ProgressRate != null)
+                    {
+                        ProgressPrint(++hashCount, mats.Count);
                     }
                 }
             }
@@ -277,12 +318,12 @@ namespace ImageAssist
         /// </summary>
         /// <param name="ct"></param>
         /// <returns></returns>
-        private async Task<List<string>> GetImagePaths(IEnumerable<string> imageDir, CancellationToken ct)
+        private static async Task<List<string>> GetImagePaths(IEnumerable<string> imageDir, CancellationToken ct)
         {
             List<string> imagePaths = new();
             List<string> ext = Enum.GetNames(typeof(ESupportedExtensions)).ToList();
             ext.Add("JPG");
-            foreach (var workingDirectory in WorkingDirectorys)
+            foreach (var workingDirectory in imageDir)
             {
                 imagePaths.AddRange(await Task.Run(() => FileIOAssist.Extension.DirFileSearch(workingDirectory, ext.ToArray(), FileIOAssist.Extension.GetNameType.Full, FileIOAssist.Extension.SubSearch.Full, ct)));
             }
@@ -301,6 +342,12 @@ namespace ImageAssist
             Mat image = Cv2.ImRead(imagefilePath, ImreadModes.Grayscale);
             // 이미지를 DHash로 해싱합니다.
             return _imageHash.GetHash(image, null);
+        }
+
+        private ulong ImageHashing(Mat mat)
+        {
+            // 이미지를 DHash로 해싱합니다.
+            return _imageHash.GetHash(mat, null);
         }
 
         /// <summary>

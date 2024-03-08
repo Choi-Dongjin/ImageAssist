@@ -62,5 +62,38 @@ namespace ImageAssist.LDrawing
 
             return imageSize;
         }
+
+        public static DImageSize MetadataReaderGetImageSize(string path)
+        {
+            //var bit = string.Empty;
+            //var width = string.Empty;
+            //var height = string.Empty;
+            //var widthData = 0;
+            //var heightData = 0;
+            //var bitData = 0;
+            var metadata = MetadataExtractor.ImageMetadataReader.ReadMetadata(path);
+            var bit = metadata.OfType<MetadataExtractor.Formats.Jpeg.JpegDirectory>().FirstOrDefault()?.GetDescription(MetadataExtractor.Formats.Jpeg.JpegDirectory.TagDataPrecision);
+            var width = metadata.OfType<MetadataExtractor.Formats.Jpeg.JpegDirectory>().FirstOrDefault()?.GetDescription(MetadataExtractor.Formats.Jpeg.JpegDirectory.TagImageWidth);
+            var height = metadata.OfType<MetadataExtractor.Formats.Jpeg.JpegDirectory>().FirstOrDefault()?.GetDescription(MetadataExtractor.Formats.Jpeg.JpegDirectory.TagImageHeight);
+            var channel = metadata.OfType<MetadataExtractor.Formats.Jpeg.JpegDirectory>().FirstOrDefault()?.GetDescription(MetadataExtractor.Formats.Jpeg.JpegDirectory.TagNumberOfComponents);
+            if (!int.TryParse(bit?.Split(' ')[0], out int bitData))
+            {
+                if (!int.TryParse(bit, out bitData))
+                {
+                    bitData = 0;
+                }
+            }
+            if (!int.TryParse(width?.Split(' ')[0], out int widthData)) { widthData = 0; }
+            if (!int.TryParse(height?.Split(' ')[0], out int heightData)) { heightData = 0; }
+            if (!int.TryParse(channel, out int channelData)) { channelData = 0; }
+
+            return new DImageSize()
+            {
+                Width = widthData,
+                Height = heightData,
+                Channel = channelData,
+                BitDepth = bitData * 3,
+            };
+        }
     }
 }

@@ -2,34 +2,36 @@
 using ImageAssist.SupportedFunction;
 using ImageAssist.SupportType;
 
-namespace ImageAssist.LOpenCV
+namespace ImageAssist.LOpenCV;
+
+/// <summary>
+/// 지각 해싱
+/// </summary>
+internal class PerceptualHashing : IImageHash
 {
-    internal class PerceptualHashing : IImageHash
+    public IImageHash Algorithm { get; }
+
+    public PerceptualHashing(ESupportHashType supportHashType)
     {
-        public IImageHash Algorithm { get; }
-
-        public PerceptualHashing(ESupportHashType supportHashType)
+        Algorithm = supportHashType switch
         {
-            Algorithm = supportHashType switch
-            {
-                ESupportHashType.AverageHash => new AverageHash(),
-                ESupportHashType.DifferenceHash => new DifferenceHash(),
-                ESupportHashType.PerceptualHash => new PerceptualHash(),
-                _ => new DifferenceHash()
-            };
-        }
+            ESupportHashType.AverageHash => new AverageHash(),
+            ESupportHashType.DifferenceHash => new DifferenceHash(),
+            ESupportHashType.PerceptualHash => new PerceptualHash(),
+            _ => new DifferenceHash()
+        };
+    }
 
-        private ulong? _hash;
+    private ulong? _hash;
 
-        public ulong GetHash<T>(ref T image, System.Drawing.Size? size = null) where T : class
-        {
-            _hash ??= Algorithm.GetHash(ref image, size);
-            return (ulong)_hash;
-        }
+    public ulong GetHash<T>(ref T image, System.Drawing.Size? size = null) where T : class
+    {
+        _hash ??= Algorithm.GetHash(ref image, size);
+        return (ulong)_hash;
+    }
 
-        public ulong GetHash<T>(T image, System.Drawing.Size? size = null) where T : class
-        {
-            return Algorithm.GetHash(ref image, size);
-        }
+    public ulong GetHash<T>(T image, System.Drawing.Size? size = null) where T : class
+    {
+        return Algorithm.GetHash(ref image, size);
     }
 }

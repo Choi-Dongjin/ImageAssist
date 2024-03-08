@@ -35,7 +35,7 @@ namespace ImageAssist.DataFormat
         }
 
         [SupportedOSPlatform("windows")]
-        public DImageInfo(string filePath, LType? lType = LType.Drawing)
+        public DImageInfo(string filePath, LType? lType = LType.Drawing, bool readInfo = false)
         {
             OriginImageSize = new();
             FilePath = filePath;
@@ -50,6 +50,9 @@ namespace ImageAssist.DataFormat
                 Extension = ExtensionFunction.GuessImageExtension(FilePath);
             }
 
+            // 이미지 정보 읽기 여부 확인
+            if (!readInfo) { return; }
+
             // 이미지 사이즈 가져오기
             OriginImageSize = OSCaseProcessing(filePath, LType) ?? new();
         }
@@ -63,9 +66,8 @@ namespace ImageAssist.DataFormat
 
             switch (platform)
             {
-
                 case PlatformID.Win32NT: // 대부분의 윈도우 OS 버전
-                    Debug.WriteLine("OS is Windows NT based."); // Windows 관련 작업 수행
+                    //Debug.WriteLine("OS is Windows NT based."); // Windows 관련 작업 수행
                     imageSize = OSCaseWindows(file, lType);
                     break;
 
@@ -91,7 +93,7 @@ namespace ImageAssist.DataFormat
             switch (lType)
             {
                 case LType.Drawing:
-                    imageSize = LDrawing.CommonFunction.GetImageSize(file);
+                    imageSize = LDrawing.CommonFunction.MetadataReaderGetImageSize(file);
                     break;
                 case LType.OpenCV: break;
                 case LType.ImageSharp: break;
