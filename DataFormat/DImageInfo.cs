@@ -10,7 +10,7 @@ namespace ImageAssist.DataFormat
     {
         public string FilePath { get; init; }
         public string FileName { get; init; }
-        public string Encoding { get { return Extension.ToString(); } }
+        public string Encoding { get { return "." + Extension.ToString().ToLower(); } }
         public DImageSize OriginImageSize { get; set; }
         public LType LType { get; init; }
         public ESupportedExtensions Extension { get; init; }
