@@ -23,6 +23,15 @@ namespace ImageAssist.DataFormat
             Extension = ESupportedExtensions.None;
         }
 
+        public DImageInfo(DImageInfo imageInfo)
+        {
+            FilePath = imageInfo.FilePath;
+            FileName = imageInfo.FileName;
+            OriginImageSize = imageInfo.OriginImageSize;
+            Extension = ESupportedExtensions.None;
+            LType = imageInfo.LType;
+        }
+
         [SupportedOSPlatform("windows")]
         public DImageInfo(string filePath)
         {

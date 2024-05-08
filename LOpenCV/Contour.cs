@@ -8,18 +8,74 @@ namespace ImageAssist.LOpenCV;
 /// </summary>
 public class Contour
 {
+    public static Point[][]? AdaptiveFindAndSortContoursByArea(Mat channel, double maxval, int blockSize, double c, AdaptiveThresholdTypes adaptiveThresholdTypes = AdaptiveThresholdTypes.MeanC, ThresholdTypes thresholdTypes = ThresholdTypes.Binary, RetrievalModes retrievalModes = RetrievalModes.External, ContourApproximationModes contourApproximation = ContourApproximationModes.ApproxSimple)
+    {
+        Mat contourMat = new();
+        // 이진화를 위한 임계값 처리
+        Cv2.AdaptiveThreshold(channel, contourMat, maxval, adaptiveThresholdTypes, thresholdTypes, blockSize, c);
+        // 윤곽선 찾기
+        Cv2.FindContours(contourMat, out Point[][] contours, out _, retrievalModes, contourApproximation);
+
+        Mat contoursMat = Mat.Zeros(channel.Size(), channel.Type());
+        contoursMat.DrawContours(contours, -1, Scalar.White, 1);
+
+        // 윤곽선을 면적에 따라 정렬
+        var sortedContours = contours.OrderByDescending(c => Cv2.ContourArea(c)).ToArray();
+        contourMat.Dispose();
+        return sortedContours;
+    }
+
+    public static Point[][]? DoubleThresholdSortContoursByArea(Mat channel, double alphaThresh, double betaThresh, double maxval, RetrievalModes retrievalModes = RetrievalModes.External, ContourApproximationModes contourApproximation = ContourApproximationModes.ApproxSimple)
+    {
+        Point[][]? contour = FindAndSortContoursByArea(channel, alphaThresh, maxval, ThresholdTypes.Binary, retrievalModes, contourApproximation);
+
+        if (contour == null) { return null; }
+        Mat mask = Mat.Zeros(channel.Size(), channel.Type()); // 마스킹 이미지 생성
+        Cv2.DrawContours(mask, contour, -1, Scalar.White, thickness: Cv2.FILLED); // 마스킹 이미지에 윤곽선 생성
+
+        Mat featuredImage = new();
+        Cv2.BitwiseAnd(mask, channel, featuredImage); // 윤곽선에 있는 이미지 만 추출
+
+        /*Cv2.ImShow("org", channel.Clone().Resize(new Size(0, 0), 5, 5));
+        Cv2.ImShow("mks", mask.Clone().Resize(new Size(0, 0), 5, 5));
+        Cv2.ImShow("mks and", featuredImage.Clone().Resize(new Size(0, 0), 5, 5));*/
+
+        Cv2.Threshold(featuredImage, featuredImage, alphaThresh, 255, ThresholdTypes.BinaryInv);
+        Mat featuredImage2 = channel.Clone();
+        featuredImage.CopyTo(featuredImage2, featuredImage);
+
+        //Cv2.ImShow("mks and threshold", featuredImage.Clone().Resize(new Size(0, 0), 5, 5));
+
+        Point[][]? contour2 = FindAndSortContoursByArea(featuredImage2, betaThresh, maxval, ThresholdTypes.BinaryInv, retrievalModes, contourApproximation);
+
+        /*Cv2.ImShow("mks and featuredImage2", featuredImage2.Clone().Resize(new Size(0, 0), 5, 5));
+        Mat mask2 = Mat.Zeros(channel.Size(), channel.Type());
+        Cv2.DrawContours(mask2, contour2, -1, Scalar.White, thickness: Cv2.FILLED);
+        Cv2.ImShow("mks2", mask2.Clone().Resize(new Size(0, 0), 5, 5));
+        Mat channelMaskImage2 = new();
+        Cv2.BitwiseAnd(mask2, featuredImage, channelMaskImage2);
+        Cv2.ImShow("mks and2", channelMaskImage2.Clone().Resize(new Size(0, 0), 5, 5));*/
+
+        mask.Dispose();
+        featuredImage.Dispose();
+        featuredImage2.Dispose();
+
+        return contour2;
+    }
+
+
     /// <summary>
     /// 윤곽선 따기
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    public static Point[][] FindAndSortContoursByArea(Mat channel, double thresh, double maxval)
+    public static Point[][] FindAndSortContoursByArea(Mat channel, double thresh, double maxval, ThresholdTypes thresholdTypes = ThresholdTypes.Binary, RetrievalModes retrievalModes = RetrievalModes.External, ContourApproximationModes contourApproximation = ContourApproximationModes.ApproxSimple)
     {
         Mat contourMat = new();
         // 이진화를 위한 임계값 처리
-        Cv2.Threshold(channel, contourMat, thresh, maxval, ThresholdTypes.Binary);
+        Cv2.Threshold(channel, contourMat, thresh, maxval, thresholdTypes);
         // 윤곽선 찾기
-        Cv2.FindContours(contourMat, out OpenCvSharp.Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+        Cv2.FindContours(contourMat, out Point[][] contours, out _, retrievalModes, contourApproximation);
         // 윤곽선을 면적에 따라 정렬
         var sortedContours = contours.OrderByDescending(c => Cv2.ContourArea(c)).ToArray();
         contourMat.Dispose();
@@ -31,14 +87,14 @@ public class Contour
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    public static Point[]? FindLargestContour(Mat channel, double thresh, double maxval)
+    public static Point[]? FindLargestContour(Mat channel, double thresh, double maxval, ThresholdTypes thresholdTypes = ThresholdTypes.Binary, RetrievalModes retrievalModes = RetrievalModes.External, ContourApproximationModes contourApproximation = ContourApproximationModes.ApproxSimple)
     {
         Mat mat = channel.Clone();
         // 이진화를 위한 임계값 처리
-        Cv2.Threshold(channel, mat, thresh, maxval, ThresholdTypes.Binary);
+        Cv2.Threshold(channel, mat, thresh, maxval, thresholdTypes);
 
         // 윤곽선 찾기
-        Cv2.FindContours(mat, out OpenCvSharp.Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+        Cv2.FindContours(mat, out Point[][] contours, out _, retrievalModes, contourApproximation);
 
         // 가장 큰 윤곽선 찾기
         OpenCvSharp.Point[]? largestContour = null;

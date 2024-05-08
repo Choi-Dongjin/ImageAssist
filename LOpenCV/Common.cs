@@ -11,7 +11,7 @@ public static class Common
     /// <param name="src2"></param>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    public static Mat Overlay(ref Mat src, ref Mat src2, double ratio)
+    public static Mat Overlay(Mat src, Mat src2, double ratio)
     {
         Mat result = new();
         Cv2.AddWeighted(src, ratio, src2, 1.0 - ratio, 0, result);
@@ -25,7 +25,7 @@ public static class Common
     /// <param name="overlay"></param>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public static Mat Overlay(ref Mat src, ref Mat overlay, Point offset)
+    public static Mat Overlay(Mat src, Mat overlay, Point offset)
     {
         // 복사본 생성 (원본 이미지를 변경하지 않기 위함)
         Mat result = src.Clone();
@@ -69,7 +69,7 @@ public static class Common
     /// <param name="offset"></param>
     /// <param name="weight"></param>
     /// <returns></returns>
-    public static Mat Overlay(ref Mat src, ref Mat overlay, Point offset, double weight)
+    public static Mat Overlay(Mat src, Mat overlay, Point offset, double weight)
     {
         // 복사본 생성 (원본 이미지를 변경하지 않기 위함)
         Mat result = src.Clone();
@@ -113,7 +113,7 @@ public static class Common
     /// <param name="offset"></param>
     /// <param name="weight"></param>
     /// <returns></returns>
-    public static Mat Overlay(ref Mat src, ref Mat overlay, Point offset, double weight, byte alpha = 0)
+    public static Mat Overlay(Mat src, Mat overlay, Point offset, double weight, byte alpha = 0)
     {
         // 복사본 생성 (원본 이미지를 변경하지 않기 위함)
         Mat result = src.Clone();
@@ -157,7 +157,7 @@ public static class Common
     /// <param name="offset"></param>
     /// <param name="weight"></param>
     /// <returns></returns>
-    public static Mat OverlayTopLeftOffset(ref Mat src, ref Mat overlay, Point offset, double weight, byte alpha = 0, double resize = 1d)
+    public static Mat OverlayTopLeftOffset(Mat src, Mat overlay, Point offset, double weight, byte alpha = 0, double resize = 1d)
     {
         // 복사본 생성 (원본 이미지를 변경하지 않기 위함)
         Mat result = src.Clone();
@@ -206,14 +206,14 @@ public static class Common
     /// <param name="offset"></param>
     /// <param name="weight"></param>
     /// <returns></returns>
-    public static Mat Overlay(ref Mat src, ref Mat overlay, Point offset, double weight, byte alpha = 0, double resize = 1d, bool useAlpha = true)
+    public static Mat Overlay(Mat src, Mat overlay, Point offset, double weight, byte alpha = 0, double resize = 1d, bool useAlpha = true, InterpolationFlags interpolation = InterpolationFlags.Linear)
     {
         // 복사본 생성 (원본 이미지를 변경하지 않기 위함)
         Mat result = src.Clone();
 
         // 오버레이 이미지 크기 조정
         Mat resizedOverlay = new();
-        if (resize != 1d) { Cv2.Resize(overlay, resizedOverlay, new Size((int)(overlay.Width * resize), (int)(overlay.Height * resize))); }
+        if (resize != 1d) { Cv2.Resize(overlay, resizedOverlay, new Size((int)(overlay.Width * resize), (int)(overlay.Height * resize)), interpolation: interpolation); }
         else { resizedOverlay = overlay; }
 
         // 이미지 간 보정값 

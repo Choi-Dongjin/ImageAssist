@@ -422,6 +422,11 @@ namespace ImageAssist
             }
         }
 
+        private void ImageAnalysiGroups()
+        {
+
+        }
+
         /// <summary>
         /// 이미지 저장 TEST
         /// </summary>
